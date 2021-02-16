@@ -1,11 +1,15 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using UnityEngine.UI;
 public class GameManager : MonoBehaviour
 {
+    
+    
+
     public Camera Camera2;
     public Camera Camera1;
+    
     public GameObject mBall;
     public float timeScale = 1f;
     public float slowmoScale = 0.1f;
@@ -14,13 +18,14 @@ public class GameManager : MonoBehaviour
     {
         Camera1.enabled = true;
         Camera2.enabled = false;
+        
     }
 
     // Update is called once per frame
     void Update()
     {
-        
-        if(Input.GetKeyDown(KeyCode.C) && Camera1.enabled == false)
+      
+        if (Input.GetKeyDown(KeyCode.C) && Camera1.enabled == false)
         {
             Camera1.enabled = true;
             Camera2.enabled = false;
@@ -43,9 +48,10 @@ public class GameManager : MonoBehaviour
             Camera1.enabled = false;
             Camera2.enabled = true;
         }
-        while (Input.GetKeyDown(KeyCode.Space))
-        {
-            Time.timeScale = timeScale * slowmoScale;
-        }
+        //while (Input.GetKeyDown(KeyCode.Space))
+        //{
+        //    Time.timeScale = timeScale * slowmoScale;
+        //}
     }
+    
 }

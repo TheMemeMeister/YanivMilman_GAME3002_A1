@@ -1,6 +1,7 @@
 using UnityEngine.Assertions;
 using UnityEngine;
-
+using System.Collections.Generic;
+using System.Collections;
 //[RequireComponent(typeof(Rigidbody))]
 public class ProjectileComponent : MonoBehaviour
 {
@@ -8,7 +9,8 @@ public class ProjectileComponent : MonoBehaviour
     private Vector3 m_vInitialVelocity = Vector3.zero;
 
     private Rigidbody m_rb = null;
-
+    public LineRenderer line;
+    public int lineSegment = 10;
     private GameObject m_landingDisplay = null;
 
     private bool m_bIsGrounded = true;
@@ -26,10 +28,12 @@ public class ProjectileComponent : MonoBehaviour
         if(Input.GetButtonDown("Shoot"))
         {
             GetComponent<Rigidbody>().velocity = m_vInitialVelocity;
+            GetComponent<Rigidbody>().position = m_rb.transform.position;
             // Get mouse position (in screen-space) and convert to world-space
-            
+
         }
         UpdateLandingPosition();
+       
     }
 
     private void CreateLandingDisplay()
@@ -40,13 +44,15 @@ public class ProjectileComponent : MonoBehaviour
 
         m_landingDisplay.GetComponent<Renderer>().material.color = Color.blue;
         m_landingDisplay.GetComponent<Collider>().enabled = false;
+        
     }
 
     private void UpdateLandingPosition()
     {
-        if (m_landingDisplay != null && m_bIsGrounded)
+        if (m_landingDisplay != null)
         {
             m_landingDisplay.transform.position = GetLandingPosition();
+            Visualize(m_vInitialVelocity);
         }
     }
 
@@ -59,6 +65,26 @@ public class ProjectileComponent : MonoBehaviour
         vFlatVel *= fTime;
 
         return transform.position + vFlatVel;
+
+    }
+    Vector3 CalcPosInTime(Vector3 m_vInitialVelocity, float fTime)
+    {
+        Vector3 VXZ = m_vInitialVelocity;
+       
+
+        Vector3 result = m_rb.position + m_vInitialVelocity * fTime;
+        float FinalPosition = (-0.5f * Mathf.Abs(Physics.gravity.y) * (fTime * fTime)) + (VXZ.y * fTime);
+        result.y = FinalPosition;
+
+        return result;
+    }
+    void Visualize(Vector3 m_vInitialVelocity)
+    {
+        for (int i = 0; i < lineSegment; i++)
+        {
+            Vector3 pos = CalcPosInTime(m_vInitialVelocity, i / (float)lineSegment);
+            line.SetPosition(i, pos);
+        }
     }
 
     #region CALLBACKS
@@ -68,7 +94,7 @@ public class ProjectileComponent : MonoBehaviour
         {
             return;
         }
-
+        Recalculating();
         m_landingDisplay.transform.position = GetLandingPosition();
         m_bIsGrounded = false;
 
@@ -95,6 +121,19 @@ public class ProjectileComponent : MonoBehaviour
     public void OnMoveLeft(float fDelta)
     {
         m_vInitialVelocity.x -= fDelta;
+    }
+    public void OnMoveUP(float fDelta)
+    {
+        m_vInitialVelocity.y += fDelta;
+    }
+    public void OnMoveDown(float fDelta)
+    {
+        m_vInitialVelocity.y -= fDelta;
+    }
+
+    IEnumerator Recalculating()
+    {
+        yield return new WaitForSeconds(1.5f);
     }
     #endregion
 }
