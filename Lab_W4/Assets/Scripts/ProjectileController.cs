@@ -8,9 +8,9 @@ public class ProjectileController : MonoBehaviour
 {
     [SerializeField]
     private float m_fInputDeltaVal = 0.1f;
+    public AudioSource SHOOT;
 
-    
-    
+
 
     private ProjectileComponent m_projectile = null;
 
@@ -25,15 +25,18 @@ public class ProjectileController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        HandleUserInput();    
+        HandleUserInput();
+        SHOOT = gameObject.GetComponent<AudioSource>();
     }
 
     private void HandleUserInput()
     {
         if (Input.GetKeyUp(KeyCode.Space))
         {
+           
             m_projectile.OnLaunchProjectile();
             LaunchDelay();
+            SHOOT.Play();
         }
 
         if (Input.GetKey(KeyCode.UpArrow))
